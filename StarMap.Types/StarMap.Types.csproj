@@ -16,5 +16,4 @@
 	<ItemGroup>
 		<Protobuf Include="Proto\IPC.proto" />
 	</ItemGroup>
-
 </Project>

@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' == 'Debug'">
-        <Reference Include="..\..\Import\KSA.dll" />
+      <Reference Include="..\..\Import\KSA.dll" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(Configuration)' != 'Debug'">
