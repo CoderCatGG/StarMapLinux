@@ -13,7 +13,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\StarMap.Core\StarMap.Core.csproj" />
+    <PackageReference Include="StarMap.Core" Version="*" Condition=" '$(ContinuousIntegrationBuild)'=='true' "/>
     <ProjectReference Include="..\StarMap.Types\StarMap.Types.csproj" />
+    <PackageReference Include="StarMap.Types" Version="*" Condition=" '$(ContinuousIntegrationBuild)'=='true' "/>
   </ItemGroup>
 
 </Project>

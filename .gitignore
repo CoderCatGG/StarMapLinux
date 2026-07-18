@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 
 installer/dist
+
+KSA.dll

@@ -1,0 +1,22 @@
+[
+	{
+		"pname": "Lib.Harmony",
+		"version": "2.4.2",
+		"hash": "sha256-1kWS5TCQRkVZ/OSGEsnKfI3HMROEE3a3qjRV9G/F1Xk="
+	},
+	{
+		"pname": "Samboy063.Tomlet",
+		"version": "6.1.0",
+		"hash": "sha256-4gSdZmChS2/3BIEWyIrjEuIhri7JmFTI4xBhfkF7iYM="
+	},
+	{
+		"pname": "Google.Protobuf",
+		"version": "3.33.0",
+		"hash": "sha256-gjq12VdC2BSnoRMJi/srcRHEp551//6Ps5pPanbqbQc="
+	},
+	{
+		"pname": "Grpc.Tools",
+		"version": "2.72.0",
+		"hash": "sha256-IaN+NBnywsdjIfzc7OoJgkDc1SdWeGbpxHlHe4cSbes="
+	}
+]
