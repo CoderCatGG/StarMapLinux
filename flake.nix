@@ -106,7 +106,7 @@
 
       src = ./StarMap.Launcher/.;
 
-      projectFile = ./StarMap.Launcher/StarMap.Launcher.csproj;
+      projectFile = "StarMap.Launcher.csproj";
       nugetDeps = ./deps.json;
       inherit dotnet-runtime dotnet-sdk;
 
