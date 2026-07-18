@@ -98,6 +98,8 @@
         star-map-core
 	star-map-types
       ];
+
+      packNupkg = true;
     };
 
     star-map-launcher = pkgs.buildDotnetModule {
@@ -118,7 +120,7 @@
       ];
     };
   in {
-    # packages."x86_64-linux".default = star-map;
+    packages."x86_64-linux".default = star-map-loader;
     packages."x86_64-linux".loader = star-map-loader;
     packages."x86_64-linux".core = star-map-core;
     packages."x86_64-linux".api = star-map-api;
