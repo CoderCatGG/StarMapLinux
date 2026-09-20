@@ -8,16 +8,26 @@
   outputs = { self, nixpkgs }: let
     pkgs = nixpkgs.legacyPackages."x86_64-linux";
 
-    dotnet-sdk = pkgs.dotnet-sdk_10;
-    dotnet-runtime = dotnet-sdk.runtime;
+    dotnetCore = pkgs.dotnetCorePackages;
+    dotnet-sdk = dotnetCore.sdk_10_0;
+    dotnet-runtime = dotnetCore.runtime_10_0;
 
     version = "0.4.5";
     buildType = "Debug";
+  
+    runtimeDeps = with pkgs; [
+      vulkan-loader
+      icu
+      # TODO remove x11 and wayland only compat
+      libx11
+      libxcursor
+      libxi
+    ];
 
     ksaDll = pkgs.requireFile {
       name = "KSA.dll";
       message = ''
-        Download the windows version.
+        sfextract your install.
       '';
       sha256 = "e6eb25f6980b93a0f1e25568ff361c37154749a3d7bdf7247ba90aa0150b47a1";
     };
@@ -73,16 +83,6 @@
       packNupkg = true;
     };
 
-    # star-map = pkgs.buildDotnetModule {
-    #   pname = "StarMap";
-    #   inherit version;
-    #
-    #   src = ./.;
-    #
-    #   projectFile = ./StarMap.slnx;
-    #   inherit dotnet-runtime dotnet-sdk;
-    # };
-
     star-map-loader = pkgs.buildDotnetModule {
       pname = "StarMap.Loader";
       inherit version;
@@ -91,13 +91,18 @@
 
       projectFile = "StarMap.Loader.csproj";
       nugetDeps = ./deps.json;
-      inherit dotnet-runtime dotnet-sdk;
+      inherit dotnet-runtime dotnet-sdk runtimeDeps;
 
       buildInputs = [
         star-map-api
         star-map-core
 	star-map-types
       ];
+
+      postInstall = ''
+        wrapProgram $out/lib/StarMap.Loader/StarMap.Loader \
+          --unset WAYLAND_DISPLAY
+      '';
 
       packNupkg = true;
     };
@@ -110,7 +115,7 @@
 
       projectFile = "StarMap.Launcher.csproj";
       nugetDeps = ./deps.json;
-      inherit dotnet-runtime dotnet-sdk;
+      inherit dotnet-runtime dotnet-sdk runtimeDeps;
 
       buildInputs = [
         star-map-api

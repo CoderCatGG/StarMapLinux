@@ -364,4 +364,7 @@ FodyWeavers.xsd
 
 installer/dist
 
-KSA.dll
+StarMapConfig.json
+
+# nix result
+result

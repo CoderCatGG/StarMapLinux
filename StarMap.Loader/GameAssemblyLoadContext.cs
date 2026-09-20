@@ -19,7 +19,7 @@ namespace StarMap
             _gameDependencyResolver = new AssemblyDependencyResolver(gamePath);
 
             _starMapDepdencyResolver = new AssemblyDependencyResolver(
-                Path.GetFullPath("./StarMap.Core.dll")
+                Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "StarMap.Core.dll"))
             );
         }
 

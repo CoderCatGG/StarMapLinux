@@ -1,6 +1,7 @@
 ﻿using StarMap.Types;
 using StarMap.Types.Pipes;
 using System.Runtime.Loader;
+using System;
 
 namespace StarMap
 {
@@ -32,7 +33,7 @@ namespace StarMap
                 return;
             }
 
-            AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath("./0Harmony.dll"));
+            AssemblyLoadContext.Default.LoadFromAssemblyPath(Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "0Harmony.dll")));
 
             var gameAssemblyContext = new GameAssemblyLoadContext(gameConfig.GameLocation);
             var dumbFacade = new SoloGameFacade();
