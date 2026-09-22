@@ -24,12 +24,13 @@
       libxi
     ];
 
-    ksaDll = pkgs.requireFile {
-      name = "KSA.dll";
+    ksaLibs = pkgs.requireFile {
+      name = "KSALibraries";
       message = ''
-        sfextract your install.
+        Download KSA...
       '';
-      sha256 = "e6eb25f6980b93a0f1e25568ff361c37154749a3d7bdf7247ba90aa0150b47a1";
+      hashMode = "recursive";
+      sha256 = "01l6rap6mm6cnzidc05wj0gw28jickvvpybnkny2cbvgf2j1w2w4";
     };
 
     star-map-types = pkgs.buildDotnetModule {
@@ -55,7 +56,8 @@
       inherit dotnet-runtime dotnet-sdk buildType;
 
       postPatch = ''
-        substituteInPlace StarMap.API.csproj --replace-fail 'Include="..\..\Import\KSA.dll"' 'Include="${ksaDll}"'
+        substituteInPlace StarMap.API.csproj --replace-fail 'Include="..\..\Import\KSA.dll"' 'Include="${ksaLibs}\KSA.dll"'
+        substituteInPlace StarMap.API.csproj --replace-fail 'Include="..\..\Import\Brutal.*.dll"' 'Include="${ksaLibs}\Brutal.*.dll"'
       '';
 
       packNupkg = true;
@@ -77,19 +79,27 @@
       ];
 
       postPatch = ''
-        substituteInPlace StarMap.Core.csproj --replace-fail 'Include="..\..\Import\KSA.dll"' 'Include="${ksaDll}"'
+        substituteInPlace StarMap.Core.csproj --replace-fail 'Include="..\..\Import\KSA.dll"' 'Include="${ksaLibs}\KSA.dll"'
+        substituteInPlace StarMap.Core.csproj --replace-fail 'Include="..\..\Import\Brutal.*.dll"' 'Include="${ksaLibs}\Brutal.*.dll" /><Reference Include="${ksaLibs}\Planet.*.dll"'
+
+        substituteInPlace StarMap.Core.csproj --replace-fail \
+		'<ProjectReference Include="..\StarMap.API\StarMap.API.csproj" />' \
+		'<PackageReference Include="StarMap.API" Version="*" />'
+        substituteInPlace StarMap.Core.csproj --replace-fail \
+		'<ProjectReference Include="..\StarMap.Types\StarMap.Types.csproj" />' \
+		'<PackageReference Include="StarMap.Types" Version="*" />'
       '';
 
       packNupkg = true;
     };
 
-    star-map-loader = pkgs.buildDotnetModule {
-      pname = "StarMap.Loader";
+    star-map = pkgs.buildDotnetModule {
+      pname = "StarMap";
       inherit version;
 
-      src = ./StarMap.Loader/.;
+      src = ./StarMap/.;
 
-      projectFile = "StarMap.Loader.csproj";
+      projectFile = "StarMap.csproj";
       nugetDeps = ./deps.json;
       inherit dotnet-runtime dotnet-sdk runtimeDeps;
 
@@ -99,38 +109,34 @@
 	star-map-types
       ];
 
-      postInstall = ''
-        wrapProgram $out/lib/StarMap.Loader/StarMap.Loader \
+      nativeBuildInputs = with pkgs; [
+        makeWrapper
+      ];
+
+      postPatch = ''
+	substituteInPlace StarMap.csproj --replace-fail \
+		'<ProjectReference Include="..\StarMap.Core\StarMap.Core.csproj" />' \
+		'<PackageReference Include="StarMap.Core" Version="*" />'
+        substituteInPlace StarMap.csproj --replace-fail \
+		'<ProjectReference Include="..\StarMap.Types\StarMap.Types.csproj" />' \
+		'<PackageReference Include="StarMap.Types" Version="*" />'
+      '';
+
+      postFixup = ''
+        cp ${star-map-core}/lib/StarMap.Core/StarMap.Core.deps.json $out/lib/StarMap/
+
+        wrapProgram $out/lib/StarMap/StarMap \
           --unset WAYLAND_DISPLAY
       '';
 
       packNupkg = true;
     };
-
-    star-map-launcher = pkgs.buildDotnetModule {
-      pname = "StarMap.Launcher";
-      inherit version;
-
-      src = ./StarMap.Launcher/.;
-
-      projectFile = "StarMap.Launcher.csproj";
-      nugetDeps = ./deps.json;
-      inherit dotnet-runtime dotnet-sdk runtimeDeps;
-
-      buildInputs = [
-        star-map-api
-	star-map-core
-        star-map-types
-	star-map-loader
-      ];
-    };
   in {
-    packages."x86_64-linux".default = star-map-loader;
-    packages."x86_64-linux".loader = star-map-loader;
+    packages."x86_64-linux".default = star-map;
+    packages."x86_64-linux".loader = star-map;
     packages."x86_64-linux".core = star-map-core;
     packages."x86_64-linux".api = star-map-api;
     packages."x86_64-linux".types = star-map-types;
-    packages."x86_64-linux".launcher = star-map-launcher;
 
     devShells."x86_64-linux".default = pkgs.mkShell {
       buildInputs = with pkgs; [
